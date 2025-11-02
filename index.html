@@ -17,7 +17,7 @@
         .capture-animation { width:100px; height:100px; border:5px solid #64ff96; border-radius:50%; animation:pulse 1.5s infinite; }
         @keyframes pulse { 0%{transform:scale(.8);opacity:1} 100%{transform:scale(1.5);opacity:0} }
         .login-section { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:40px; position:relative; }
-        .company-title { font-size:32px; font-weight:700; margin-bottom:10px; background:linear-gradient(135deg,#64ff96 0%,#2ecc71 100%); -webkit-background-clip:text; background-clip:text; color:transparent; text-align:center; }
+        .company-title { font-size:32px; font-weight:700; margin-bottom:10px; color:#ff8c00; text-align:center; }
         .company-subtitle { font-size:16px; color:#b0b0d0; margin-bottom:40px; text-align:center; }
         .login-form { width:100%; max-width:320px; padding:30px; background:rgba(30,30,46,.8); border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,.3); transition:box-shadow .5s ease; position:relative; z-index:2; }
         .login-form.glow { box-shadow:0 0 20px rgba(100,255,150,.5); }
@@ -52,8 +52,9 @@
         .location-option i { margin-right:6px; }
         
         /* Company Logo */
-        .company-logo-container { display: flex; justify-content: center; margin-bottom: 20px; }
-        .company-logo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #64ff96; box-shadow: 0 0 20px rgba(100,255,150,.3); }
+        .company-logo-container { position: absolute; top: 20px; left: 20px; display: flex; align-items: center; gap: 10px; }
+        .company-logo { width: 60px; height: 60px; object-fit: cover; border: 2px solid #ff8c00; border-radius: 8px; box-shadow: 0 0 10px rgba(255,140,0,.3); }
+        .company-name { font-size: 20px; font-weight: 700; color: #ff8c00; }
 
         /* Dashboard */
         .dashboard { display:none; width:100%; height:100vh; background:linear-gradient(135deg,#0c0c0c 0%,#1a1a2e 100%); color:#f0f0f0; padding:20px; }
@@ -66,22 +67,29 @@
         .dashboard-card:hover { transform:translateY(-5px); }
         .dashboard-card h3 { font-size:18px; margin-bottom:15px; color:#a0f0c0; }
         .dashboard-card p { color:#b0b0d0; line-height:1.6; }
-        .captured-photo-container { margin:20px auto; max-width:600px; text-align:center; padding:20px; background:rgba(20,20,30,.8); border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,.3); }
+        .captured-photo-container { margin:20px 0; max-width:600px; text-align:left; padding:20px; background:rgba(20,20,30,.8); border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,.3); }
         .captured-photo { max-width:100%; max-height:300px; border-radius:8px; margin-top:10px; border:2px solid #64ff96; }
         .login-record { margin-top:15px; padding:15px; background:rgba(30,30,46,.7); border-radius:10px; text-align:left; font-size:14px; }
         .login-record h4 { color:#64ff96; margin-bottom:10px; }
         .login-record p { margin:6px 0; color:#b0b0d0; }
+        .location-display { color: #64ff96; font-weight: 600; margin-top: 10px; }
         @media (max-width:768px){
             .container{flex-direction:column;width:90%;height:auto;}
             .camera-section{padding:40px 0;}
             .login-section{padding:20px;}
             .dashboard-header{flex-direction:column;gap:15px;text-align:center;}
+            .company-logo-container { position: relative; top: 0; left: 0; justify-content: center; margin-bottom: 20px; }
         }
     </style>
 </head>
 <body>
     <!-- Login Page -->
     <div class="container" id="loginPage">
+        <div class="company-logo-container">
+            <img src="https://raw.githubusercontent.com/bimal-bp/Work_plan/main/Company_logo" alt="Company Logo" class="company-logo">
+            <div class="company-name">SGX MINERALS</div>
+        </div>
+        
         <div class="camera-section">
             <div class="camera-container">
                 <video id="cameraPreview" autoplay muted playsinline></video>
@@ -109,10 +117,7 @@
         <div class="login-section">
             <div class="decoration"></div>
             <div class="decoration"></div>
-            <div class="company-logo-container">
-                <img src="https://raw.githubusercontent.com/bimal-bp/Work_plan/main/Company_logo" alt="Company Logo" class="company-logo">
-            </div>
-            <h1 class="company-title">SGX MINERALS</h1>
+            <h1 class="company-title">SGX MINERALS PVT LTD</h1>
             <p class="company-subtitle">Resource Management System</p>
 
             <form class="login-form" id="loginForm">
@@ -142,17 +147,17 @@
             </button>
         </div>
 
-        <div class="captured-photo-container">
-            <h3>Login Security Record</h3>
-            <img id="capturedPhoto" class="captured-photo" src="" alt="Captured login photo">
-            <div class="login-record" id="loginRecord">
-                <h4>Login Details:</h4>
-                <div id="loginDetails"></div>
-                <p id="locationName" style="margin-top:10px; font-weight:600; color:#64ff96;"></p>
-            </div>
-        </div>
-
         <div class="dashboard-content">
+            <div class="captured-photo-container">
+                <h3>Login Security Record</h3>
+                <img id="capturedPhoto" class="captured-photo" src="" alt="Captured login photo">
+                <div class="login-record" id="loginRecord">
+                    <h4>Login Details:</h4>
+                    <div id="loginDetails"></div>
+                    <p class="location-display" id="locationName">📍 Madhura Nagar, Vengal Rao Nagar, Ward 99 Vengal Rao Nagar, Greater Hyderabad Municipal Corporation Central Zone, Hyderabad, Khairatabad mandal, Hyderabad, Telangana, 500073, India</p>
+                </div>
+            </div>
+
             <div class="dashboard-card"><h3>Resource Overview</h3><p>View and manage all mineral resources, inventory levels, and extraction schedules.</p></div>
             <div class="dashboard-card"><h3>Production Analytics</h3><p>Monitor production metrics, efficiency rates, and operational performance.</p></div>
             <div class="dashboard-card"><h3>Employee Management</h3><p>Manage staff schedules, assignments, and performance tracking.</p></div>
