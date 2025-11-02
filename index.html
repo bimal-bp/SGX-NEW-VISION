@@ -10,9 +10,9 @@
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
         body { background:linear-gradient(135deg,#0c0c0c 0%,#1a1a2e 100%); color:#f0f0f0; min-height:100vh; overflow-x:hidden; }
-       
+        
         /* Login Page Styles */
-        .container { display:flex; width:900px; height:550px; background:rgba(20,20,30,.9); border-radius:20px; overflow:hidden; box-shadow:0 15px 35px rgba(0,0,0,.5); position:relative; margin: 50px auto; }
+        .container { display:flex; width:900px; height:550px; background:rgba(20,20,30,.9); border-radius:20px; overflow:hidden; box-shadow:0 15px 35px rgba(0,0,0,.5); position:relative; }
         .camera-section { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; background:linear-gradient(45deg,#0f0f1a 0%,#1a1a2e 100%); padding:20px; }
         .camera-container { width:300px; height:300px; border-radius:10px; overflow:hidden; position:relative; box-shadow:0 0 20px rgba(0,0,0,.5); }
         #cameraPreview { width:100%; height:100%; object-fit:cover; background:#2a2a4a; }
@@ -54,52 +54,68 @@
         .location-option { padding:8px 12px; background:rgba(40,40,60,.8); border:1px solid #4a4a7a; border-radius:6px; color:#f0f0f0; cursor:pointer; transition:all .3s ease; text-align:center; font-size:14px; }
         .location-option:hover { background:rgba(60,60,80,.8); border-color:#64ff96; }
         .location-option i { margin-right:6px; }
-       
+        
         /* Company Logo */
         .company-logo-container { position: absolute; top: 20px; left: 20px; display: flex; align-items: center; gap: 10px; }
         .company-logo { width: 60px; height: 60px; object-fit: cover; border: 2px solid #ff8c00; border-radius: 8px; box-shadow: 0 0 10px rgba(255,140,0,.3); }
         .company-name { font-size: 20px; font-weight: 700; color: #ff8c00; }
-       
+        
         /* Dashboard */
         .dashboard { display:none; width:100%; min-height:100vh; background:linear-gradient(135deg,#0c0c0c 0%,#1a1a2e 100%); color:#f0f0f0; padding:20px; }
         .dashboard-header { display:flex; justify-content:space-between; align-items:center; padding:20px; background:rgba(20,20,30,.8); border-radius:15px; margin-bottom:30px; box-shadow:0 10px 25px rgba(0,0,0,.3); }
         .welcome-message { font-size:24px; font-weight:600; background:linear-gradient(135deg,#64ff96 0%,#2ecc71 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
         .dashboard-logout { padding:10px 20px; background:linear-gradient(135deg,#64ff96 0%,#2ecc71 100%); border:none; border-radius:8px; color:#1a1a2e; font-size:16px; font-weight:600; cursor:pointer; transition:all .3s ease; display:flex; align-items:center; gap:8px; }
         .dashboard-logout:hover { transform:translateY(-2px); box-shadow:0 5px 15px rgba(100,255,150,.4); }
-
-        /* Two-Column Layout */
-        .dashboard-body { display: grid; grid-template-columns: 1fr 2fr; gap: 25px; margin-top: 20px; }
-        .left-panel { background:rgba(20,20,30,.8); border-radius:15px; padding:25px; box-shadow:0 10px 25px rgba(0,0,0,.3); }
-        .right-panel { background:rgba(20,20,30,.8); border-radius:15px; padding:25px; box-shadow:0 10px 25px rgba(0,0,0,.3); overflow-y:auto; max-height: calc(100vh - 200px); }
-
-        .captured-photo { max-width:100%; max-height:300px; border-radius:8px; margin:15px 0; border:2px solid #64ff96; }
-        .login-record { margin-top:15px; padding:15px; background:rgba(30,30,46,.7); border-radius:10px; font-size:14px; }
+        
+        /* Dashboard Layout */
+        .dashboard-content { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+        .dashboard-left { display: flex; flex-direction: column; gap: 20px; }
+        .dashboard-right { display: flex; flex-direction: column; gap: 20px; }
+        
+        .dashboard-card { background:rgba(20,20,30,.8); border-radius:15px; padding:20px; box-shadow:0 10px 25px rgba(0,0,0,.3); transition:transform .3s ease; }
+        .dashboard-card:hover { transform:translateY(-5px); }
+        .dashboard-card h3 { font-size:18px; margin-bottom:15px; color:#a0f0c0; }
+        .dashboard-card p { color:#b0b0d0; line-height:1.6; }
+        .captured-photo-container { text-align:left; padding:20px; background:rgba(20,20,30,.8); border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,.3); }
+        .captured-photo { max-width:100%; max-height:300px; border-radius:8px; margin-top:10px; border:2px solid #64ff96; }
+        .login-record { margin-top:15px; padding:15px; background:rgba(30,30,46,.7); border-radius:10px; text-align:left; font-size:14px; }
         .login-record h4 { color:#64ff96; margin-bottom:10px; }
         .login-record p { margin:6px 0; color:#b0b0d0; }
         .location-display { color: #64ff96; font-weight: 600; margin-top: 10px; }
-
+        
         /* Production Dashboard Styles */
         .card-header { background-color: #FF7A00; color: white; }
         .editable { cursor: pointer; font-family: monospace; }
         .error { border-color: red; }
         th.sticky { position: sticky; top: 0; background: white; z-index: 10; }
         .sparkline { width: 100px; height: 20px; background: linear-gradient(to right, #ddd, #aaa); }
-
+        
+        /* Task Management */
+        .task-management { margin-top: 30px; }
+        .task-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px; }
+        .task-card { background: rgba(20,20,30,.8); border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,.3); transition: all 0.3s ease; cursor: pointer; }
+        .task-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,.5); }
+        .task-card i { font-size: 40px; margin-bottom: 15px; color: #64ff96; }
+        .task-card h3 { font-size: 18px; margin-bottom: 10px; color: #a0f0c0; }
+        .task-card p { color: #b0b0d0; font-size: 14px; }
+        
         /* Main Website Button */
-        .main-website-btn { display: flex; justify-content: center; margin: 40px 0; }
+        .main-website-btn { display: flex; justify-content: center; margin-top: 40px; }
         .website-btn { background: linear-gradient(135deg, #64ff96 0%, #2ecc71 100%); color: #1a1a2e; padding: 15px 30px; border-radius: 50px; font-size: 18px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 10px; transition: all 0.3s ease; box-shadow: 0 10px 20px rgba(0,0,0,.3); }
         .website-btn:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,.5); }
-
-        @media (max-width:1024px) {
-            .dashboard-body { grid-template-columns: 1fr; }
-            .right-panel { max-height: none; }
-        }
+        
+        /* Daily Production Button */
+        .daily-production-btn { background: linear-gradient(135deg, #ff8c00 0%, #ffa500 100%); color: white; padding: 12px 25px; border-radius: 8px; font-size: 16px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(255,140,0,.3); margin-left: 20px; }
+        .daily-production-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,140,0,.5); }
+        
         @media (max-width:768px){
-            .container{flex-direction:column;width:90%;height:auto; margin: 20px auto;}
+            .container{flex-direction:column;width:90%;height:auto;}
             .camera-section{padding:40px 0;}
             .login-section{padding:20px;}
             .dashboard-header{flex-direction:column;gap:15px;text-align:center;}
             .company-logo-container { position: relative; top: 0; left: 0; justify-content: center; margin-bottom: 20px; }
+            .task-cards { grid-template-columns: 1fr; }
+            .dashboard-content { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -109,7 +125,7 @@
         <div class="company-logo-container">
             <img src="https://raw.githubusercontent.com/bimal-bp/Work_plan/main/Company_logo" alt="Company Logo" class="company-logo">
         </div>
-       
+        
         <div class="camera-section">
             <div class="camera-container">
                 <video id="cameraPreview" autoplay muted playsinline></video>
@@ -160,273 +176,972 @@
     <div class="dashboard" id="dashboardPage">
         <div class="dashboard-header">
             <div class="welcome-message" id="welcomeMessage">Welcome, Bimal Patra!</div>
-            <button class="dashboard-logout" id="logoutBtn">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
-        </div>
-
-        <!-- Two-Column Layout -->
-        <div class="dashboard-body">
-            <!-- Left: Login Record -->
-            <div class="left-panel">
-                <h3 class="text-xl font-bold mb-4 text-white">Login Security Record</h3>
-                <img id="capturedPhoto" class="captured-photo" src="" alt="Captured login photo">
-                <div class="login-record" id="loginRecord">
-                    <h4>Login Details:</h4>
-                    <div id="loginDetails"></div>
-                    <p class="location-display" id="locationName">Ankapalli, Thumpalla, 500312, India</p>
-                </div>
-            </div>
-
-            <!-- Right: Production Dashboard (Always Visible) -->
-            <div class="right-panel">
-                <div class="max-w-7xl mx-auto">
-                    <h1 class="text-2xl font-bold text-center mb-4 text-white">Daily Production & Dispatch Dashboard — Date: <span id="dashboard-date">02-11-2025</span></h1>
-
-                    <!-- Action Bar -->
-                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 bg-gray-800 p-4 rounded-lg shadow">
-                        <div class="flex items-center">
-                            <label for="date-input" class="mr-2 text-white">Date:</label>
-                            <input type="text" id="date-input" value="02-11-2025" class="border rounded p-1 bg-gray-700 text-white" onchange="updateDate(this.value)">
-                        </div>
-                        <div class="flex space-x-2 mt-2 md:mt-0">
-                            <button onclick="exportCSV()" class="bg-blue-500 text-white px-4 py-2 rounded">Export CSV</button>
-                            <button onclick="exportExcel()" class="bg-green-500 text-white px-4 py-2 rounded">Export Excel</button>
-                            <button onclick="printDashboard()" class="bg-gray-500 text-white px-4 py-2 rounded">Print</button>
-                        </div>
-                    </div>
-
-                    <!-- Grid Layout -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Production Summary -->
-                        <div class="bg-gray-800 p-4 rounded-lg shadow">
-                            <h2 class="card-header text-lg font-semibold p-2 rounded-t-lg">Production Summary</h2>
-                            <table class="w-full border-collapse">
-                                <thead>
-                                    <tr>
-                                        <th class="border p-2 sticky bg-gray-700 text-white">Metric</th>
-                                        <th class="border p-2 sticky bg-gray-700 text-white">FTD</th>
-                                        <th class="border p-2 sticky bg-gray-700 text-white">MTD</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td class="border p-2 text-white">Mine Production</td><td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td><td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td></tr>
-                                    <tr><td class="border p-2 text-white">Boulder Dispatch QTY</td><td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td><td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td></tr>
-                                    <tr><td class="border p-2 text-white">Plant Production</td><td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td><td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td></tr>
-                                    <tr><td class="border p-2 text-white">Dispatch QTY</td><td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td><td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td></tr>
-                                    <tr><td class="border p-2 text-white">Basic Revenue</td><td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td><td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td></tr>
-                                    <tr><td class="border p-2 text-white">Total Revenue</td><td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td><td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Royalty Requirement -->
-                        <div class="bg-gray-800 p-4 rounded-lg shadow">
-                            <h2 class="card-header text-lg font-semibold p-2 rounded-t-lg">Royalty Requirement & Dispatch Planning</h2>
-                            <table class="w-full border-collapse" id="royalty-table">
-                                <thead>
-                                    <tr>
-                                        <th class="border p-2 sticky bg-gray-700 text-white">Materiel</th>
-                                        <th class="border p-2 sticky bg-gray-700 text-white">10MM</th>
-                                        <th class="border p-2 sticky bg-gray-700 text-white">20MM</th>
-                                        <th class="border p-2 sticky bg-gray-700 text-white">40MM</th>
-                                        <th class="border p-2 sticky bg-gray-700 text-white">40–65MM</th>
-                                        <th class="border p-2 sticky bg-gray-700 text-white">Msand</th>
-                                        <th class="border p-2 sticky bg-gray-700 text-white">GSB</th>
-                                        <th class="border p-2 sticky bg-gray-700 text-white">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="border p-2 text-white">Royalty Balance (Tons)</td>
-                                        <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
-                                        <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
-                                        <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
-                                        <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
-                                        <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
-                                        <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
-                                        <td class="border p-2 font-bold text-white" id="royalty-total">0</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Dispatch Plan -->
-                        <div class="bg-gray-800 p-4 rounded-lg shadow md:col-span-2">
-                            <h2 class="card-header text-lg font-semibold p-2 rounded-t-lg">Today's Dispatch Plan in Tons</h2>
-                            <table class="w-full border-collapse" id="dispatch-table">
-                                <!-- Full table content same as before -->
-                                <!-- (Truncated for brevity - full version below in script) -->
-                            </table>
-                        </div>
-
-                        <!-- Stock, Equipment, Funds - Add as needed -->
-                    </div>
-                </div>
+            <div>
+                <button class="dashboard-logout" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
             </div>
         </div>
-
-        <!-- Main Website Button -->
-        <div class="main-website-btn">
-            <a href="https://bimal-bp.github.io/SGX_Aggregate_WEB/" target="_blank" class="website-btn">
-                <i class="fas fa-external-link-alt"></i> Visit Main Website
-            </a>
+        
+        <!-- Dashboard Layout -->
+        <div class="dashboard-content">
+            <!-- Left Column -->
+            <div class="dashboard-left">
+                <div class="captured-photo-container">
+                    <h3>Login Security Record</h3>
+                    <img id="capturedPhoto" class="captured-photo" src="" alt="Captured login photo">
+                    <div class="login-record" id="loginRecord">
+                        <h4>Login Details:</h4>
+                        <div id="loginDetails"></div>
+                        <p class="location-display" id="locationName">📍 Ankapalli ,Thumpalla ,500312, India</p>
+                    </div>
+                </div>
+                
+                <!-- Task Management -->
+                <div class="task-management">
+                    <h2 class="text-2xl font-bold mb-4 text-white">Task Management</h2>
+                    <div class="task-cards">
+                        <div class="task-card">
+                            <i class="fas fa-mountain"></i>
+                            <h3>Quarry</h3>
+                            <p>Manage quarry operations and production</p>
+                        </div>
+                        <div class="task-card">
+                            <i class="fas fa-industry"></i>
+                            <h3>Plant Maintenance</h3>
+                            <p>Oversee plant maintenance schedules</p>
+                        </div>
+                        <div class="task-card">
+                            <i class="fas fa-user-tie"></i>
+                            <h3>Arun Sir</h3>
+                            <p>Tasks assigned to Arun Sir</p>
+                        </div>
+                        <div class="task-card">
+                            <i class="fas fa-user-tie"></i>
+                            <h3>Jagan Sir</h3>
+                            <p>Tasks assigned to Jagan Sir</p>
+                        </div>
+                        <div class="task-card">
+                            <i class="fas fa-tasks"></i>
+                            <h3>General Tasks</h3>
+                            <p>Other operational tasks</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Main Website Button -->
+                <div class="main-website-btn">
+                    <a href="https://bimal-bp.github.io/SGX_Aggregate_WEB/" target="_blank" class="website-btn">
+                        <i class="fas fa-external-link-alt"></i> Visit Main Website
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Right Column - Production Dashboard -->
+            <div class="dashboard-right">
+                <!-- Production Dashboard -->
+                <div id="productionDashboard">
+                    <div class="max-w-7xl mx-auto">
+                        <!-- Title -->
+                        <h1 class="text-2xl font-bold text-center mb-4 text-white">Daily Production & Dispatch Dashboard — Date: <span id="dashboard-date">01-11-2025</span></h1>
+                        
+                        <!-- Top Action Bar -->
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 bg-gray-800 p-4 rounded-lg shadow">
+                            <div class="flex items-center">
+                                <label for="date-input" class="mr-2 text-white">Date:</label>
+                                <input type="text" id="date-input" value="01-11-2025" class="border rounded p-1 bg-gray-700 text-white" onchange="updateDate(this.value)">
+                            </div>
+                            <div class="flex space-x-2 mt-2 md:mt-0">
+                                <button onclick="exportCSV()" class="bg-blue-500 text-white px-4 py-2 rounded">Export CSV</button>
+                                <button onclick="exportExcel()" class="bg-green-500 text-white px-4 py-2 rounded">Export Excel</button>
+                                <button onclick="printDashboard()" class="bg-gray-500 text-white px-4 py-2 rounded">Print</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Responsive Grid: 1 col mobile, 2 col desktop -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            
+                            <!-- Section 1: Production Summary -->
+                            <div class="bg-gray-800 p-4 rounded-lg shadow">
+                                <h2 class="card-header text-lg font-semibold p-2 rounded-t-lg" title="Summary of production metrics for the day and month.">Production Summary</h2>
+                                <table class="w-full border-collapse">
+                                    <thead>
+                                        <tr>
+                                            <th class="border p-2 sticky bg-gray-700 text-white">Metric</th>
+                                            <th class="border p-2 sticky bg-gray-700 text-white" title="For The Day">FTD</th>
+                                            <th class="border p-2 sticky bg-gray-700 text-white" title="Month To Date">MTD</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="border p-2 text-white">Mine Production</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">Boulder Dispatch QTY</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">Plant Production</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">Dispatch QTY</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">Basic Revenue</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">Total Revenue</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Section 2: Royalty Requirement & Dispatch Planning -->
+                            <div class="bg-gray-800 p-4 rounded-lg shadow">
+                                <h2 class="card-header text-lg font-semibold p-2 rounded-t-lg" title="Royalty balances and planning for materials.">Royalty Requirement & Dispatch Planning</h2>
+                                <table class="w-full border-collapse" id="royalty-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="border p-2 sticky bg-gray-700 text-white">Materiel</th>
+                                            <th class="border p-2 sticky bg-gray-700 text-white" title="10MM material">10MM</th>
+                                            <th class="border p-2 sticky bg-gray-700 text-white" title="20MM material">20MM</th>
+                                            <th class="border p-2 sticky bg-gray-700 text-white" title="40MM material">40MM</th>
+                                            <th class="border p-2 sticky bg-gray-700 text-white" title="40-65MM material">40–65MM</th>
+                                            <th class="border p-2 sticky bg-gray-700 text-white" title="Msand material">Msand</th>
+                                            <th class="border p-2 sticky bg-gray-700 text-white" title="GSB material">GSB</th>
+                                            <th class="border p-2 sticky bg-gray-700 text-white">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="border p-2 text-white">Royalty Balance in MDL (Tons)</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2 font-bold text-white" id="royalty-total">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 font-bold text-white" colspan="7">Grand Total</td>
+                                            <td class="border p-2 font-bold text-white" id="royalty-grand-total">0</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <!-- Blasting Details -->
+                                <div class="mt-4">
+                                    <h3 class="font-semibold mb-2 text-white">Blasting Details</h3>
+                                    <table class="w-full border-collapse">
+                                        <thead>
+                                            <tr>
+                                                <th class="border p-2 bg-gray-700 text-white">No. of Holes</th>
+                                                <th class="border p-2 bg-gray-700 text-white">Total Feetage</th>
+                                                <th class="border p-2 bg-gray-700 text-white">Blasting (Yes/No)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                                <td class="border p-2">
+                                                    <select class="w-full p-1 border rounded bg-gray-700 text-white" onchange="validateAndUpdate(this)">
+                                                        <option value=""></option>
+                                                        <option value="Yes">Yes</option>
+                                                        <option value="No">No</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- Section 3: Today's Dispatch Plan in Tons -->
+                            <div class="bg-gray-800 p-4 rounded-lg shadow md:col-span-2">
+                                <h2 class="card-header text-lg font-semibold p-2 rounded-t-lg" title="Dispatch plan by customer and material.">Today's Dispatch Plan in Tons</h2>
+                                <table class="w-full border-collapse" id="dispatch-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="border p-2 sticky bg-gray-700 text-white">Customer</th>
+                                            <th class="border p-2 sticky bg-gray-700 text-white">10MM</th>
+                                            <th class="border p-2 sticky bg-gray-700 text-white">20MM</th>
+                                            <th class="border p-2 sticky bg-gray-700 text-white">40MM</th>
+                                            <th class="border p-2 sticky bg-gray-700 text-white">40–65MM</th>
+                                            <th class="border p-2 sticky bg-gray-700 text-white">Msand</th>
+                                            <th class="border p-2 sticky bg-gray-700 text-white">GSB</th>
+                                            <th class="border p-2 sticky bg-gray-700 text-white">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="border p-2 text-white">Aravind Techno</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2 font-bold text-white">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">Chenderu & Co</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2 font-bold text-white">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">Afcon Projects</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2 font-bold text-white">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">KEC</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2 font-bold text-white">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">JS Mineing</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2 font-bold text-white">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">L&T – P1</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2 font-bold text-white">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">Others</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2 font-bold text-white">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 font-bold text-white">Total</td>
+                                            <td class="border p-2 font-bold text-white">0</td>
+                                            <td class="border p-2 font-bold text-white">0</td>
+                                            <td class="border p-2 font-bold text-white">0</td>
+                                            <td class="border p-2 font-bold text-white">0</td>
+                                            <td class="border p-2 font-bold text-white">0</td>
+                                            <td class="border p-2 font-bold text-white">0</td>
+                                            <td class="border p-2 font-bold text-white">0</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Section 4: Stock Status -->
+                            <div class="bg-gray-800 p-4 rounded-lg shadow">
+                                <h2 class="card-header text-lg font-semibold p-2 rounded-t-lg" title="Current stock levels.">Stock Status</h2>
+                                <table class="w-full border-collapse">
+                                    <tbody>
+                                        <tr>
+                                            <td class="border p-2 text-white">10MM</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">20MM</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">RIVO</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">M-Sand</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">Railway Ballast (40–65MM)</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 font-bold text-white">Total Stock</td>
+                                            <td class="border p-2 font-bold text-white" id="stock-total">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">Boulder Stock at Quarry</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">Boulder Stock at Plant</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">Diesel Stock</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">Tire Stock</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Section 5: Equipment Update -->
+                            <div class="bg-gray-800 p-4 rounded-lg shadow">
+                                <h2 class="card-header text-lg font-semibold p-2 rounded-t-lg" title="Status of equipment.">Equipment Update</h2>
+                                <table class="w-full border-collapse">
+                                    <thead>
+                                        <tr>
+                                            <th class="border p-2 sticky bg-gray-700 text-white">Equipment</th>
+                                            <th class="border p-2 sticky bg-gray-700 text-white">Running</th>
+                                            <th class="border p-2 sticky bg-gray-700 text-white">Idle</th>
+                                            <th class="border p-2 sticky bg-gray-700 text-white">Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="border p-2 text-white">Tippers</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">Excavators Working</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">Loaders Working</td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                            <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">Total Trips of Tippers</td>
+                                            <td class="border p-2 text-white" colspan="3"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">Total Tonnage Moved</td>
+                                            <td class="border p-2 text-white" colspan="3"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border p-2 text-white">Excavator Working Hours</td>
+                                            <td class="border p-2 text-white" colspan="3"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Section 6: Fund Requirement & Collection Plan -->
+                            <div class="bg-gray-800 p-4 rounded-lg shadow md:col-span-2">
+                                <h2 class="card-header text-lg font-semibold p-2 rounded-t-lg" title="Financial planning for funds and collections.">Fund Requirement & Collection Plan</h2>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <h3 class="font-bold mb-2 text-white">Fund Requirement</h3>
+                                        <table class="w-full border-collapse" id="fund-requirement-table">
+                                            <thead>
+                                                <tr>
+                                                    <th class="border p-2 bg-gray-700 text-white">Vendor Name</th>
+                                                    <th class="border p-2 bg-gray-700 text-white">Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td class="border p-2 font-bold text-white">Total Fund Requirement</td>
+                                                    <td class="border p-2 font-bold text-white" id="fund-total">0</td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold mb-2 text-white">Expected Collection</h3>
+                                        <table class="w-full border-collapse" id="collection-table">
+                                            <thead>
+                                                <tr>
+                                                    <th class="border p-2 bg-gray-700 text-white">Customer Name</th>
+                                                    <th class="border p-2 bg-gray-700 text-white">Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                                    <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td class="border p-2 font-bold text-white">Total Expected Collection</td>
+                                                    <td class="border p-2 font-bold text-white" id="collection-total">0</td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const loginPage = document.getElementById('loginPage');
-            const dashboardPage = document.getElementById('dashboardPage');
-            const welcomeMessage = document.getElementById('welcomeMessage');
-            const logoutBtn = document.getElementById('logoutBtn');
-            const usernameInput = document.getElementById('username');
-            const passwordInput = document.getElementById('password');
-            const loginForm = document.getElementById('loginForm');
-            const loginBtn = document.getElementById('loginBtn');
-            const cameraPreview = document.getElementById('cameraPreview');
-            const captureOverlay = document.getElementById('captureOverlay');
-            const capturedPhoto = document.getElementById('capturedPhoto');
-            const loginDetails = document.getElementById('loginDetails');
-            const locationStatus = document.getElementById('locationStatus');
-            const locationNameEl = document.getElementById('locationName');
+            // ---------- DOM ----------
+            const loginPage       = document.getElementById('loginPage');
+            const dashboardPage   = document.getElementById('dashboardPage');
+            const welcomeMessage  = document.getElementById('welcomeMessage');
+            const logoutBtn       = document.getElementById('logoutBtn');
+            const usernameInput   = document.getElementById('username');
+            const passwordInput   = document.getElementById('password');
+            const loginForm       = document.getElementById('loginForm');
+            const loginBtn        = document.getElementById('loginBtn');
+            const cameraPreview   = document.getElementById('cameraPreview');
+            const captureOverlay  = document.getElementById('captureOverlay');
+            const capturedPhoto   = document.getElementById('capturedPhoto');
+            const loginDetails    = document.getElementById('loginDetails');
+            const locationStatus  = document.getElementById('locationStatus');
+            const locationNameEl  = document.getElementById('locationName');
             const locationOptions = document.getElementById('locationOptions');
-            const retryBtn = document.getElementById('retryLocation');
-            const approxBtn = document.getElementById('useApproximateLocation');
-            const skipBtn = document.getElementById('skipLocation');
+            const retryBtn        = document.getElementById('retryLocation');
+            const approxBtn       = document.getElementById('useApproximateLocation');
+            const skipBtn         = document.getElementById('skipLocation');
+            const productionDashboard = document.getElementById('productionDashboard');
 
+            // ---------- STATE ----------
             let currentStream = null;
             let isCameraActive = false;
             let userLocation = null;
             let locationAcquired = false;
-            let locationType = 'none';
+            let locationType = 'none'; // 'high', 'approximate', 'none'
+            let geolocationWatchId = null;
 
+            // ---------- EMPLOYEE DB ----------
             const employees = {
                 'sgxminerals': { password: 'admin123', name: 'Bimal Patra', role: 'Operations Manager' },
-                'jdoe': { password: 'mineral2023', name: 'Jane Doe', role: 'Geologist' },
-                'rsmith': { password: 'extraction22', name: 'Robert Smith', role: 'Field Supervisor' }
+                'jdoe':        { password: 'mineral2023', name: 'Jane Doe', role: 'Geologist' },
+                'rsmith':      { password: 'extraction22', name: 'Robert Smith', role: 'Field Supervisor' }
             };
 
+            // Pre-fill demo
             usernameInput.value = 'sgxminerals';
             passwordInput.value = 'admin123';
 
+            // ---------- CAMERA ----------
             function startCamera() {
                 if (currentStream) stopCamera();
-                navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 640 }, height: { ideal: 480 } }, audio: false })
-                    .then(stream => { currentStream = stream; cameraPreview.srcObject = stream; isCameraActive = true; })
-                    .catch(err => { console.error('Camera error:', err); alert('Camera access denied.'); });
+                navigator.mediaDevices.getUserMedia({ 
+                    video: { width: { ideal: 640 }, height: { ideal: 480 } }, 
+                    audio: false 
+                })
+                .then(stream => { 
+                    currentStream = stream; 
+                    cameraPreview.srcObject = stream; 
+                    isCameraActive = true; 
+                })
+                .catch(err => { 
+                    console.error('Camera error:', err); 
+                    alert('Camera access denied or unavailable.'); 
+                });
             }
 
             function stopCamera() {
-                if (currentStream) { currentStream.getTracks().forEach(t => t.stop()); currentStream = null; isCameraActive = false; }
+                if (currentStream) { 
+                    currentStream.getTracks().forEach(t => t.stop()); 
+                    currentStream = null; 
+                    isCameraActive = false; 
+                }
             }
 
+            // ---------- LOCATION (IMPROVED) ----------
             function requestLocation() {
                 locationStatus.innerHTML = '<div class="spinner"></div> Getting your location…';
                 locationStatus.className = 'location-status waiting';
                 locationOptions.style.display = 'none';
                 locationAcquired = false;
+                locationType = 'none';
                 loginBtn.disabled = true;
+                if (!navigator.geolocation) {
+                    locationFailed('Geolocation not supported by your browser.');
+                    return;
+                }
 
-                if (!navigator.geolocation) { locationFailed('Geolocation not supported.'); return; }
+                // First try with high accuracy
+                const highAccuracyOptions = {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 0
+                };
 
                 navigator.geolocation.getCurrentPosition(
-                    pos => handleLocationSuccess(pos, 'high'),
-                    err => navigator.geolocation.getCurrentPosition(
-                        pos => handleLocationSuccess(pos, 'approximate'),
-                        handleLocationError,
-                        { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
-                    ),
-                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+                    // Success callback
+                    function(position) {
+                        handleLocationSuccess(position, 'high');
+                    },
+                    // Error callback
+                    function(error) {
+                        console.warn('High accuracy location failed, trying with lower accuracy:', error);
+                        
+                        // Try with lower accuracy
+                        const lowAccuracyOptions = {
+                            enableHighAccuracy: false,
+                            timeout: 10000,
+                            maximumAge: 60000 // Accept cached location up to 1 minute old
+                        };
+                        
+                        navigator.geolocation.getCurrentPosition(
+                            function(position) {
+                                handleLocationSuccess(position, 'approximate');
+                            },
+                            function(error) {
+                                handleLocationError(error);
+                            },
+                            lowAccuracyOptions
+                        );
+                    },
+                    highAccuracyOptions
                 );
             }
 
-            function handleLocationSuccess(position, type) {
-                userLocation = { lat: position.coords.latitude, lon: position.coords.longitude, acc: position.coords.accuracy };
-                locationAcquired = true; locationType = type; loginBtn.disabled = false;
-                locationStatus.innerHTML = type === 'high' ? '<i class="fas fa-check-circle"></i> High accuracy' : '<i class="fas fa-exclamation-triangle"></i> Approximate location';
-                locationStatus.className = type === 'high' ? 'location-status success' : 'location-status warning';
+            function handleLocationSuccess(position, accuracy) {
+                userLocation = {
+                    lat: position.coords.latitude,
+                    lon: position.coords.longitude,
+                    acc: position.coords.accuracy,
+                    alt: position.coords.altitude,
+                    heading: position.coords.heading,
+                    speed: position.coords.speed,
+                    timestamp: new Date(position.timestamp)
+                };
+                
+                locationAcquired = true;
+                locationType = accuracy;
+                loginBtn.disabled = false;
+                
+                if (accuracy === 'high') {
+                    locationStatus.innerHTML = '<i class="fas fa-check-circle"></i> High accuracy location captured';
+                    locationStatus.className = 'location-status success';
+                } else {
+                    locationStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Approximate location captured';
+                    locationStatus.className = 'location-status warning';
+                }
+                
+                // Get address from coordinates
                 reverseGeocode(userLocation.lat, userLocation.lon);
             }
 
-            function handleLocationError() { locationFailed('Failed to get location.'); }
-            function locationFailed(msg) { locationStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${msg}`; locationStatus.className = 'location-status error'; locationOptions.style.display = 'flex'; loginBtn.disabled = true; }
+            function handleLocationError(error) {
+                let errorMessage = 'Failed to get location. ';
+                
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage = 'Location permission denied. Please enable location services in your browser settings.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage = 'Location information unavailable. Please check your device location settings.';
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage = 'Location request timed out. Please check your internet connection.';
+                        break;
+                    default:
+                        errorMessage = 'An unknown error occurred while getting location.';
+                        break;
+                }
+                
+                locationFailed(errorMessage);
+            }
 
+            function locationFailed(message) {
+                userLocation = null;
+                locationAcquired = false;
+                locationType = 'none';
+                loginBtn.disabled = true;
+                locationStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+                locationStatus.className = 'location-status error';
+                locationOptions.style.display = 'flex';
+                locationNameEl.textContent = '';
+            }
+
+            function useApproximateLocation() {
+                // Try to get approximate location from IP
+                locationStatus.innerHTML = '<div class="spinner"></div> Getting approximate location…';
+                locationStatus.className = 'location-status waiting';
+                locationOptions.style.display = 'none';
+                
+                fetch('https://ipapi.co/json/')
+                    .then(response => response.json())
+                    .then(data => {
+                        userLocation = {
+                            lat: data.latitude,
+                            lon: data.longitude,
+                            acc: 50000, // Approximate accuracy for IP-based location
+                            timestamp: new Date()
+                        };
+                        
+                        locationAcquired = true;
+                        locationType = 'approximate';
+                        loginBtn.disabled = false;
+                        locationStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Approximate location (IP-based)';
+                        locationStatus.className = 'location-status warning';
+                        
+                        locationNameEl.textContent = `📍 ${data.city}, ${data.region}, ${data.country_name}`;
+                    })
+                    .catch(error => {
+                        console.error('IP-based location failed:', error);
+                        locationFailed('Could not determine approximate location. Please try high accuracy location or skip.');
+                    });
+            }
+
+            function skipLocation() {
+                locationAcquired = false;
+                locationType = 'none';
+                loginBtn.disabled = false;
+                locationStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Location not captured - Limited access';
+                locationStatus.className = 'location-status warning';
+                locationOptions.style.display = 'none';
+                locationNameEl.textContent = '';
+            }
+
+            // ---------- REVERSE GEOCODE (IMPROVED) ----------
             async function reverseGeocode(lat, lon) {
                 try {
                     const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
+                    
+                    if (!res.ok) {
+                        throw new Error('Geocoding service unavailable');
+                    }
+                    
                     const data = await res.json();
-                    locationNameEl.textContent = data.display_name ? ` ${data.display_name}` : ` ${lat.toFixed(6)}, ${lon.toFixed(6)}`;
-                } catch { locationNameEl.textContent = ` ${lat.toFixed(6)}, ${lon.toFixed(6)}`; }
+                    let address = 'Unknown location';
+                    
+                    if (data && data.display_name) {
+                        address = data.display_name;
+                    } else {
+                        address = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+                    }
+                    
+                    locationNameEl.textContent = `📍 ${address}`;
+                    
+                } catch (error) {
+                    console.error('Reverse geocoding error:', error);
+                    locationNameEl.textContent = `📍 ${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+                }
             }
 
+            // ---------- CAPTURE ----------
             async function captureImage() {
-                if (!isCameraActive) return null;
+                if (!isCameraActive) {
+                    console.warn('Camera not active for capture');
+                    return null;
+                }
+                
                 captureOverlay.classList.add('active');
-                await new Promise(r => setTimeout(r, 1000));
-                const canvas = document.createElement('canvas');
-                canvas.width = cameraPreview.videoWidth || 640;
-                canvas.height = cameraPreview.videoHeight || 480;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(cameraPreview, 0, 0, canvas.width, canvas.height);
-                const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-                captureOverlay.classList.remove('active');
-                return dataUrl;
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = cameraPreview.videoWidth || 640;
+                    canvas.height = cameraPreview.videoHeight || 480;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(cameraPreview, 0, 0, canvas.width, canvas.height);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                    captureOverlay.classList.remove('active');
+                    return dataUrl;
+                } catch (error) {
+                    console.error('Image capture error:', error);
+                    captureOverlay.classList.remove('active');
+                    return null;
+                }
             }
 
+            // ---------- LOGIN (IMPROVED) ----------
             async function loginSuccess(name) {
                 const photo = await captureImage();
                 loginPage.style.display = 'none';
                 dashboardPage.style.display = 'block';
                 welcomeMessage.textContent = `Welcome, ${name}!`;
-                if (photo) capturedPhoto.src = photo;
-
+                
+                if (photo) {
+                    capturedPhoto.src = photo;
+                } else {
+                    capturedPhoto.alt = 'Photo capture failed';
+                }
                 const now = new Date();
+                let locationInfo = '';
+                
+                if (userLocation) {
+                    locationInfo = `<p><strong>Location:</strong> ${locationNameEl.textContent || 'Unknown location'}</p>`;
+                } else {
+                    locationInfo = '<p><strong>Location:</strong> Not captured</p>';
+                }
                 loginDetails.innerHTML = `
                     <p><strong>User:</strong> ${name}</p>
-                    <p><strong>Time:</strong> ${now.toLocaleString()}</p>
-                    ${userLocation ? `<p><strong>Location:</strong> ${locationNameEl.textContent}</p>` : '<p><strong>Location:</strong> Not captured</p>'}
+                    <p><strong>Login Time:</strong> ${now.toLocaleString()}</p>
+                    ${locationInfo}
                 `;
             }
 
             function handleLogin() {
+                if (!locationAcquired && locationType === 'none') {
+                    alert('Location is required for full system access. Please try to capture your location or use approximate location.');
+                    return;
+                }
+                
                 const username = usernameInput.value.trim();
                 const password = passwordInput.value;
+                
                 if (employees[username] && employees[username].password === password) {
                     loginSuccess(employees[username].name);
                 } else {
-                    alert('Invalid credentials.\nDemo: sgxminerals / admin123');
+                    alert('Invalid username or password.\n\nDemo credentials:\nUsername: sgxminerals\nPassword: admin123');
                 }
             }
 
+            // ---------- LOGOUT ----------
             function logout() {
                 loginPage.style.display = 'flex';
                 dashboardPage.style.display = 'none';
-                usernameInput.value = 'sgxminerals'; passwordInput.value = 'admin123';
-                capturedPhoto.src = ''; loginDetails.innerHTML = ''; locationNameEl.textContent = '';
-                startCamera(); requestLocation();
+                usernameInput.value = 'sgxminerals';
+                passwordInput.value = 'admin123';
+                capturedPhoto.src = '';
+                loginDetails.innerHTML = '';
+                locationNameEl.textContent = '';
+                
+                // Reset location status
+                locationStatus.innerHTML = '<div class="spinner"></div> Getting your location…';
+                locationStatus.className = 'location-status waiting';
+                locationOptions.style.display = 'none';
+                loginBtn.disabled = true;
+                
+                // Restart services
+                startCamera();
+                requestLocation();
             }
 
-            loginForm.addEventListener('submit', e => { e.preventDefault(); handleLogin(); });
+            // ---------- EVENT LISTENERS ----------
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                handleLogin();
+            });
+
             logoutBtn.addEventListener('click', logout);
             retryBtn.addEventListener('click', requestLocation);
-            approxBtn.addEventListener('click', () => { fetch('https://ipapi.co/json/').then(r => r.json()).then(d => { userLocation = { lat: d.latitude, lon: d.longitude }; locationNameEl.textContent = ` ${d.city}, ${d.region}`; loginBtn.disabled = false; locationStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> IP-based location'; locationStatus.className = 'location-status warning'; }).catch(() => locationFailed('IP location failed.')); });
-            skipBtn.addEventListener('click', () => { locationAcquired = false; loginBtn.disabled = false; locationStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Skipped'; locationStatus.className = 'location-status warning'; });
+            approxBtn.addEventListener('click', useApproximateLocation);
+            skipBtn.addEventListener('click', skipLocation);
 
-            [usernameInput, passwordInput].forEach(i => i.addEventListener('focus', () => loginForm.classList.add('glow')));
-            [usernameInput, passwordInput].forEach(i => i.addEventListener('blur', () => { if (!usernameInput.matches(':focus') && !passwordInput.matches(':focus')) loginForm.classList.remove('glow'); }));
+            // Form glow effect
+            [usernameInput, passwordInput].forEach(input => {
+                input.addEventListener('focus', () => loginForm.classList.add('glow'));
+                input.addEventListener('blur', () => {
+                    if (!usernameInput.matches(':focus') && !passwordInput.matches(':focus')) {
+                        loginForm.classList.remove('glow');
+                    }
+                });
+            });
 
+            // ---------- INITIALIZATION ----------
             startCamera();
             requestLocation();
         });
 
-        // Dashboard Functions
-        function updateDate(v) { document.getElementById('dashboard-date').textContent = v; }
-        function validateAndUpdate(el) { if (el.dataset.type === 'number' && isNaN(parseFloat(el.textContent))) el.classList.add('error'); else el.classList.remove('error'); updateTotals(); }
-        function updateTotals() { /* Same logic as before */ }
-        function exportCSV() { /* ... */ }
-        function exportExcel() { if (typeof XLSX === 'undefined') exportCSV(); else { const wb = XLSX.utils.book_new(); document.querySelectorAll('table').forEach((t, i) => XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(t), `S${i+1}`)); XLSX.writeFile(wb, 'dashboard.xlsx'); } }
-        function printDashboard() { document.querySelector('.flex.justify-between').style.display = 'none'; window.print(); document.querySelector('.flex.justify-between').style.display = 'flex'; }
-    </script>
+        // Production Dashboard Functions
+        function updateDate(newDate) {
+            document.getElementById('dashboard-date').textContent = newDate;
+        }
+
+        function validateAndUpdate(element) {
+            const value = element.textContent ? element.textContent.trim() : element.value;
+            if (element.dataset && element.dataset.type === 'number' && isNaN(parseFloat(value))) {
+                element.classList.add('error');
+                return;
+            }
+            if (element.classList) element.classList.remove('error');
+            updateTotals();
+        }
+
+        function updateTotals() {
+            // Royalty Table
+            const royaltyRow = document.querySelector('#royalty-table tbody tr');
+            let royaltyTotal = 0;
+            royaltyRow.querySelectorAll('.editable').forEach(cell => {
+                const val = parseFloat(cell.textContent) || 0;
+                royaltyTotal += val;
+            });
+            document.getElementById('royalty-total').textContent = royaltyTotal.toFixed(1);
+            document.getElementById('royalty-grand-total').textContent = royaltyTotal.toFixed(1);
+
+            // Dispatch Table
+            const dispatchRows = document.querySelectorAll('#dispatch-table tbody tr:not(:last-child)');
+            const columnTotals = Array(6).fill(0);
+            let grandTotal = 0;
+            dispatchRows.forEach(row => {
+                let rowTotal = 0;
+                const cells = row.querySelectorAll('.editable');
+                cells.forEach((cell, idx) => {
+                    const val = parseFloat(cell.textContent) || 0;
+                    rowTotal += val;
+                    columnTotals[idx] += val;
+                });
+                row.querySelector('td:last-child').textContent = rowTotal;
+                grandTotal += rowTotal;
+            });
+
+            const totalRow = document.querySelector('#dispatch-table tbody tr:last-child');
+            totalRow.querySelectorAll('td:not(:first-child):not(:last-child)').forEach((td, idx) => {
+                td.textContent = columnTotals[idx];
+            });
+            totalRow.querySelector('td:last-child').textContent = grandTotal;
+
+            // Stock Total
+            let stockTotal = 0;
+            document.querySelectorAll('[id="stock-total"]').forEach(total => {
+                const stockRows = total.closest('table').querySelectorAll('tr:nth-child(-n+5) .editable'); // First 5 are materials
+                stockTotal = Array.from(stockRows).reduce((sum, cell) => sum + (parseFloat(cell.textContent) || 0), 0);
+                total.textContent = stockTotal;
+            });
+
+            // Fund and Collection Totals
+            ['fund-requirement-table', 'collection-table'].forEach(id => {
+                const table = document.getElementById(id);
+                let total = 0;
+                table.querySelectorAll('tbody .editable[data-type="number"]').forEach(cell => {
+                    total += parseFloat(cell.textContent) || 0;
+                });
+                table.querySelector('tfoot td:last-child').textContent = total;
+            });
+        }
+
+        function exportCSV() {
+            let csv = 'Section,Data\n'; // Collect all data
+            // Add logic to iterate through all tables and append to csv
+            // For brevity, example for one table
+            const tables = document.querySelectorAll('#productionDashboard table');
+            tables.forEach((table, idx) => {
+                csv += `Table ${idx + 1}\n`;
+                Array.from(table.rows).forEach(row => {
+                    csv += Array.from(row.cells).map(cell => cell.textContent.trim()).join(',') + '\n';
+                });
+                csv += '\n';
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'dashboard.csv';
+            a.click();
+        }
+
+        function exportExcel() {
+            if (typeof XLSX === 'undefined') {
+                alert('SheetJS not loaded, falling back to CSV');
+                exportCSV();
+                return;
+            }
+            const wb = XLSX.utils.book_new();
+            document.querySelectorAll('#productionDashboard table').forEach((table, idx) => {
+                const ws = XLSX.utils.table_to_sheet(table);
+                XLSX.utils.book_append_sheet(wb, ws, `Sheet${idx + 1}`);
+            });
+            XLSX.writeFile(wb, 'dashboard.xlsx');
+        }
+
+        function printDashboard() {
+            // Hide controls
+            document.querySelector('.flex.justify-between').style.display = 'none';
+            window.print();
+            document.querySelector('.flex.justify-between').style.display = 'flex';
+        }
+
+        // Initial update
+        updateTotals();
+
+        // Accessibility: Keyboard navigation for editable cells
+        document.addEventListener('keydown', (e) => {
+            if (e.target.classList.contains('editable') && e.key === 'Enter') {
+                e.preventDefault();
+                e.target.blur();
+            }
+        });
+    </script>  
 </body>
 </html>
