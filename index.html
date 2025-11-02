@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGX Minerals - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
+        body { background:linear-gradient(135deg,#0c0c0c 0%,#1a1a2e 100%); color:#f0f0f0; min-height:100vh; display:flex; justify-content:center; align-items:center; overflow-x:hidden; }
+        .container { display:flex; width:900px; height:550px; background:rgba(20,20,30,.9); border-radius:20px; overflow:hidden; box-shadow:0 15px 35px rgba(0,0,0,.5); position:relative; }
+        .camera-section { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; background:linear-gradient(45deg,#0f0f1a 0%,#1a1a2e 100%); padding:20px; }
+        .camera-container { width:300px; height:300px; border-radius:10px; overflow:hidden; position:relative; box-shadow:0 0 20px rgba(0,0,0,.5); }
+        #cameraPreview { width:100%; height:100%; object-fit:cover; background:#2a2a4a; }
+        .capture-overlay { position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.7); display:flex; justify-content:center; align-items:center; opacity:0; pointer-events:none; transition:opacity .3s ease; }
+        .capture-overlay.active { opacity:1; pointer-events:auto; }
+        .capture-animation { width:100px; height:100px; border:5px solid #64ff96; border-radius:50%; animation:pulse 1.5s infinite; }
+        @keyframes pulse { 0%{transform:scale(.8);opacity:1} 100%{transform:scale(1.5);opacity:0} }
+        .login-section { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:40px; position:relative; }
+        .company-title { font-size:32px; font-weight:700; margin-bottom:10px; background:linear-gradient(135deg,#64ff96 0%,#2ecc71 100%); -webkit-background-clip:text; background-clip:text; color:transparent; text-align:center; }
+        .company-subtitle { font-size:16px; color:#b0b0d0; margin-bottom:40px; text-align:center; }
+        .login-form { width:100%; max-width:320px; padding:30px; background:rgba(30,30,46,.8); border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,.3); transition:box-shadow .5s ease; position:relative; z-index:2; }
+        .login-form.glow { box-shadow:0 0 20px rgba(100,255,150,.5); }
+        h2 { text-align:center; margin-bottom:30px; font-weight:600; color:#a0f0c0; font-size:28px; }
+        .input-group { margin-bottom:20px; position:relative; }
+        label { display:block; margin-bottom:8px; font-size:14px; color:#b0b0d0; }
+        input { width:100%; padding:12px 15px; background:rgba(40,40,60,.8); border:1px solid #4a4a7a; border-radius:8px; color:#f0f0f0; font-size:16px; transition:all .3s ease; }
+        input:focus { outline:none; border-color:#64ff96; box-shadow:0 0 10px rgba(100,255,150,.3); }
+        .login-btn { width:100%; padding:12px; background:linear-gradient(135deg,#64ff96 0%,#2ecc71 100%); border:none; border-radius:8px; color:#1a1a2e; font-size:16px; font-weight:600; cursor:pointer; transition:all .3s ease; margin-top:10px; display:flex; justify-content:center; align-items:center; gap:8px; }
+        .login-btn:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 5px 15px rgba(100,255,150,.4); }
+        .login-btn:disabled { background:#555; cursor:not-allowed; opacity:0.7; }
+        .forgot-password { text-align:center; margin-top:20px; }
+        .forgot-password a { color:#64ff96; text-decoration:none; font-size:14px; transition:color .3s ease; }
+        .forgot-password a:hover { color:#a0f0c0; text-decoration:underline; }
+        .decoration { position:absolute; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle,rgba(100,255,150,.1) 0%,rgba(100,255,150,0) 70%); z-index:1; }
+        .decoration:nth-child(1){top:-50px;right:-50px;width:150px;height:150px;}
+        .decoration:nth-child(2){bottom:-80px;left:-80px;width:200px;height:200px;}
+        .camera-info { margin-top:15px; text-align:center; font-size:14px; color:#b0b0d0; }
+        .location-status { margin-top:10px; text-align:center; font-size:14px; display:flex; align-items:center; justify-content:center; gap:6px; }
+        .location-status i { font-size:16px; }
+        .location-status.success { color:#64ff96; }
+        .location-status.error { color:#ff6464; }
+        .location-status.waiting { color:#b0b0d0; }
+        .location-status.warning { color:#ffa500; }
+        .retry-btn { margin-top:12px; padding:8px 16px; background:#64ff96; color:#1a1a2e; border:none; border-radius:6px; cursor:pointer; font-weight:600; font-size:14px; display:flex; align-items:center; gap:6px; }
+        .retry-btn:hover { background:#2ecc71; }
+        .spinner { width:16px; height:16px; border:2px solid #b0b0d0; border-top-color:#64ff96; border-radius:50%; animation:spin 1s linear infinite; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+        .location-options { margin-top:10px; display:flex; flex-direction:column; gap:8px; }
+        .location-option { padding:8px 12px; background:rgba(40,40,60,.8); border:1px solid #4a4a7a; border-radius:6px; color:#f0f0f0; cursor:pointer; transition:all .3s ease; text-align:center; font-size:14px; }
+        .location-option:hover { background:rgba(60,60,80,.8); border-color:#64ff96; }
+        .location-option i { margin-right:6px; }
+        
+        /* Company Logo */
+        .company-logo-container { display: flex; justify-content: center; margin-bottom: 20px; }
+        .company-logo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #64ff96; box-shadow: 0 0 20px rgba(100,255,150,.3); }
+
+        /* Dashboard */
+        .dashboard { display:none; width:100%; height:100vh; background:linear-gradient(135deg,#0c0c0c 0%,#1a1a2e 100%); color:#f0f0f0; padding:20px; }
+        .dashboard-header { display:flex; justify-content:space-between; align-items:center; padding:20px; background:rgba(20,20,30,.8); border-radius:15px; margin-bottom:30px; box-shadow:0 10px 25px rgba(0,0,0,.3); }
+        .welcome-message { font-size:24px; font-weight:600; background:linear-gradient(135deg,#64ff96 0%,#2ecc71 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+        .dashboard-logout { padding:10px 20px; background:linear-gradient(135deg,#64ff96 0%,#2ecc71 100%); border:none; border-radius:8px; color:#1a1a2e; font-size:16px; font-weight:600; cursor:pointer; transition:all .3s ease; display:flex; align-items:center; gap:8px; }
+        .dashboard-logout:hover { transform:translateY(-2px); box-shadow:0 5px 15px rgba(100,255,150,.4); }
+        .dashboard-content { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px; padding:20px; }
+        .dashboard-card { background:rgba(20,20,30,.8); border-radius:15px; padding:20px; box-shadow:0 10px 25px rgba(0,0,0,.3); transition:transform .3s ease; }
+        .dashboard-card:hover { transform:translateY(-5px); }
+        .dashboard-card h3 { font-size:18px; margin-bottom:15px; color:#a0f0c0; }
+        .dashboard-card p { color:#b0b0d0; line-height:1.6; }
+        .captured-photo-container { margin:20px auto; max-width:600px; text-align:center; padding:20px; background:rgba(20,20,30,.8); border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,.3); }
+        .captured-photo { max-width:100%; max-height:300px; border-radius:8px; margin-top:10px; border:2px solid #64ff96; }
+        .login-record { margin-top:15px; padding:15px; background:rgba(30,30,46,.7); border-radius:10px; text-align:left; font-size:14px; }
+        .login-record h4 { color:#64ff96; margin-bottom:10px; }
+        .login-record p { margin:6px 0; color:#b0b0d0; }
+        @media (max-width:768px){
+            .container{flex-direction:column;width:90%;height:auto;}
+            .camera-section{padding:40px 0;}
+            .login-section{padding:20px;}
+            .dashboard-header{flex-direction:column;gap:15px;text-align:center;}
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div class="container" id="loginPage">
+        <div class="camera-section">
+            <div class="camera-container">
+                <video id="cameraPreview" autoplay muted playsinline></video>
+                <div class="capture-overlay" id="captureOverlay">
+                    <div class="capture-animation"></div>
+                </div>
+            </div>
+            <div class="camera-info">Camera will capture your photo upon login</div>
+            <div class="location-status waiting" id="locationStatus">
+                <div class="spinner"></div> Getting your location…
+            </div>
+            <div class="location-options" id="locationOptions" style="display:none;">
+                <button class="location-option" id="retryLocation">
+                    <i class="fas fa-redo"></i> Retry High Accuracy Location
+                </button>
+                <button class="location-option" id="useApproximateLocation">
+                    <i class="fas fa-map-marker-alt"></i> Use Approximate Location
+                </button>
+                <button class="location-option" id="skipLocation">
+                    <i class="fas fa-forward"></i> Skip Location (Limited Access)
+                </button>
+            </div>
+        </div>
+
+        <div class="login-section">
+            <div class="decoration"></div>
+            <div class="decoration"></div>
+            <div class="company-logo-container">
+                <img src="https://raw.githubusercontent.com/bimal-bp/Work_plan/main/Company_logo" alt="Company Logo" class="company-logo">
+            </div>
+            <h1 class="company-title">SGX MINERALS</h1>
+            <p class="company-subtitle">Resource Management System</p>
+
+            <form class="login-form" id="loginForm">
+                <h2>Welcome Back</h2>
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter your username" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="login-btn" id="loginBtn" disabled>
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <div class="forgot-password"><a href="#">Forgot Password?</a></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div class="dashboard" id="dashboardPage">
+        <div class="dashboard-header">
+            <div class="welcome-message" id="welcomeMessage">Welcome, Bimal Patra!</div>
+            <button class="dashboard-logout" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+
+        <div class="captured-photo-container">
+            <h3>Login Security Record</h3>
+            <img id="capturedPhoto" class="captured-photo" src="" alt="Captured login photo">
+            <div class="login-record" id="loginRecord">
+                <h4>Login Details:</h4>
+                <div id="loginDetails"></div>
+                <p id="locationName" style="margin-top:10px; font-weight:600; color:#64ff96;"></p>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="dashboard-card"><h3>Resource Overview</h3><p>View and manage all mineral resources, inventory levels, and extraction schedules.</p></div>
+            <div class="dashboard-card"><h3>Production Analytics</h3><p>Monitor production metrics, efficiency rates, and operational performance.</p></div>
+            <div class="dashboard-card"><h3>Employee Management</h3><p>Manage staff schedules, assignments, and performance tracking.</p></div>
+            <div class="dashboard-card"><h3>Equipment Status</h3><p>Track equipment maintenance schedules and operational status.</p></div>
+            <div class="dashboard-card"><h3>Environmental Compliance</h3><p>Monitor environmental impact and ensure regulatory compliance.</p></div>
+            <div class="dashboard-card"><h3>Reports & Documentation</h3><p>Generate reports, export data, and manage documentation.</p></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // ---------- DOM ----------
+            const loginPage       = document.getElementById('loginPage');
+            const dashboardPage   = document.getElementById('dashboardPage');
+            const welcomeMessage  = document.getElementById('welcomeMessage');
+            const logoutBtn       = document.getElementById('logoutBtn');
+            const usernameInput   = document.getElementById('username');
+            const passwordInput   = document.getElementById('password');
+            const loginForm       = document.getElementById('loginForm');
+            const loginBtn        = document.getElementById('loginBtn');
+            const cameraPreview   = document.getElementById('cameraPreview');
+            const captureOverlay  = document.getElementById('captureOverlay');
+            const capturedPhoto   = document.getElementById('capturedPhoto');
+            const loginDetails    = document.getElementById('loginDetails');
+            const locationStatus  = document.getElementById('locationStatus');
+            const locationNameEl  = document.getElementById('locationName');
+            const locationOptions = document.getElementById('locationOptions');
+            const retryBtn        = document.getElementById('retryLocation');
+            const approxBtn       = document.getElementById('useApproximateLocation');
+            const skipBtn         = document.getElementById('skipLocation');
+
+            // ---------- STATE ----------
+            let currentStream = null;
+            let isCameraActive = false;
+            let userLocation = null;
+            let locationAcquired = false;
+            let locationType = 'none'; // 'high', 'approximate', 'none'
+            let geolocationWatchId = null;
+
+            // ---------- EMPLOYEE DB ----------
+            const employees = {
+                'sgxminerals': { password: 'admin123', name: 'Bimal Patra', role: 'Operations Manager' },
+                'jdoe':        { password: 'mineral2023', name: 'Jane Doe', role: 'Geologist' },
+                'rsmith':      { password: 'extraction22', name: 'Robert Smith', role: 'Field Supervisor' }
+            };
+
+            // Pre-fill demo
+            usernameInput.value = 'sgxminerals';
+            passwordInput.value = 'admin123';
+
+            // ---------- CAMERA ----------
+            function startCamera() {
+                if (currentStream) stopCamera();
+                navigator.mediaDevices.getUserMedia({ 
+                    video: { width: { ideal: 640 }, height: { ideal: 480 } }, 
+                    audio: false 
+                })
+                .then(stream => { 
+                    currentStream = stream; 
+                    cameraPreview.srcObject = stream; 
+                    isCameraActive = true; 
+                })
+                .catch(err => { 
+                    console.error('Camera error:', err); 
+                    alert('Camera access denied or unavailable.'); 
+                });
+            }
+
+            function stopCamera() {
+                if (currentStream) { 
+                    currentStream.getTracks().forEach(t => t.stop()); 
+                    currentStream = null; 
+                    isCameraActive = false; 
+                }
+            }
+
+            // ---------- LOCATION (IMPROVED) ----------
+            function requestLocation() {
+                locationStatus.innerHTML = '<div class="spinner"></div> Getting your location…';
+                locationStatus.className = 'location-status waiting';
+                locationOptions.style.display = 'none';
+                locationAcquired = false;
+                locationType = 'none';
+                loginBtn.disabled = true;
+
+                if (!navigator.geolocation) {
+                    locationFailed('Geolocation not supported by your browser.');
+                    return;
+                }
+
+                // First try with high accuracy
+                const highAccuracyOptions = {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 0
+                };
+
+                navigator.geolocation.getCurrentPosition(
+                    // Success callback
+                    function(position) {
+                        handleLocationSuccess(position, 'high');
+                    },
+                    // Error callback
+                    function(error) {
+                        console.warn('High accuracy location failed, trying with lower accuracy:', error);
+                        
+                        // Try with lower accuracy
+                        const lowAccuracyOptions = {
+                            enableHighAccuracy: false,
+                            timeout: 10000,
+                            maximumAge: 60000 // Accept cached location up to 1 minute old
+                        };
+                        
+                        navigator.geolocation.getCurrentPosition(
+                            function(position) {
+                                handleLocationSuccess(position, 'approximate');
+                            },
+                            function(error) {
+                                handleLocationError(error);
+                            },
+                            lowAccuracyOptions
+                        );
+                    },
+                    highAccuracyOptions
+                );
+            }
+
+            function handleLocationSuccess(position, accuracy) {
+                userLocation = {
+                    lat: position.coords.latitude,
+                    lon: position.coords.longitude,
+                    acc: position.coords.accuracy,
+                    alt: position.coords.altitude,
+                    heading: position.coords.heading,
+                    speed: position.coords.speed,
+                    timestamp: new Date(position.timestamp)
+                };
+                
+                locationAcquired = true;
+                locationType = accuracy;
+                loginBtn.disabled = false;
+                
+                if (accuracy === 'high') {
+                    locationStatus.innerHTML = '<i class="fas fa-check-circle"></i> High accuracy location captured';
+                    locationStatus.className = 'location-status success';
+                } else {
+                    locationStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Approximate location captured';
+                    locationStatus.className = 'location-status warning';
+                }
+                
+                // Get address from coordinates
+                reverseGeocode(userLocation.lat, userLocation.lon);
+            }
+
+            function handleLocationError(error) {
+                let errorMessage = 'Failed to get location. ';
+                
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage = 'Location permission denied. Please enable location services in your browser settings.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage = 'Location information unavailable. Please check your device location settings.';
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage = 'Location request timed out. Please check your internet connection.';
+                        break;
+                    default:
+                        errorMessage = 'An unknown error occurred while getting location.';
+                        break;
+                }
+                
+                locationFailed(errorMessage);
+            }
+
+            function locationFailed(message) {
+                userLocation = null;
+                locationAcquired = false;
+                locationType = 'none';
+                loginBtn.disabled = true;
+                locationStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+                locationStatus.className = 'location-status error';
+                locationOptions.style.display = 'flex';
+                locationNameEl.textContent = '';
+            }
+
+            function useApproximateLocation() {
+                // Try to get approximate location from IP
+                locationStatus.innerHTML = '<div class="spinner"></div> Getting approximate location…';
+                locationStatus.className = 'location-status waiting';
+                locationOptions.style.display = 'none';
+                
+                fetch('https://ipapi.co/json/')
+                    .then(response => response.json())
+                    .then(data => {
+                        userLocation = {
+                            lat: data.latitude,
+                            lon: data.longitude,
+                            acc: 50000, // Approximate accuracy for IP-based location
+                            timestamp: new Date()
+                        };
+                        
+                        locationAcquired = true;
+                        locationType = 'approximate';
+                        loginBtn.disabled = false;
+                        locationStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Approximate location (IP-based)';
+                        locationStatus.className = 'location-status warning';
+                        
+                        locationNameEl.textContent = `📍 ${data.city}, ${data.region}, ${data.country_name}`;
+                    })
+                    .catch(error => {
+                        console.error('IP-based location failed:', error);
+                        locationFailed('Could not determine approximate location. Please try high accuracy location or skip.');
+                    });
+            }
+
+            function skipLocation() {
+                locationAcquired = false;
+                locationType = 'none';
+                loginBtn.disabled = false;
+                locationStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Location not captured - Limited access';
+                locationStatus.className = 'location-status warning';
+                locationOptions.style.display = 'none';
+                locationNameEl.textContent = '';
+            }
+
+            // ---------- REVERSE GEOCODE (IMPROVED) ----------
+            async function reverseGeocode(lat, lon) {
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
+                    
+                    if (!res.ok) {
+                        throw new Error('Geocoding service unavailable');
+                    }
+                    
+                    const data = await res.json();
+                    let address = 'Unknown location';
+                    
+                    if (data && data.display_name) {
+                        address = data.display_name;
+                    } else {
+                        address = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+                    }
+                    
+                    locationNameEl.textContent = `📍 ${address}`;
+                    
+                } catch (error) {
+                    console.error('Reverse geocoding error:', error);
+                    locationNameEl.textContent = `📍 ${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+                }
+            }
+
+            // ---------- CAPTURE ----------
+            async function captureImage() {
+                if (!isCameraActive) {
+                    console.warn('Camera not active for capture');
+                    return null;
+                }
+                
+                captureOverlay.classList.add('active');
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = cameraPreview.videoWidth || 640;
+                    canvas.height = cameraPreview.videoHeight || 480;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(cameraPreview, 0, 0, canvas.width, canvas.height);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                    captureOverlay.classList.remove('active');
+                    return dataUrl;
+                } catch (error) {
+                    console.error('Image capture error:', error);
+                    captureOverlay.classList.remove('active');
+                    return null;
+                }
+            }
+
+            // ---------- LOGIN (IMPROVED) ----------
+            async function loginSuccess(name) {
+                const photo = await captureImage();
+                loginPage.style.display = 'none';
+                dashboardPage.style.display = 'block';
+                welcomeMessage.textContent = `Welcome, ${name}!`;
+                
+                if (photo) {
+                    capturedPhoto.src = photo;
+                } else {
+                    capturedPhoto.alt = 'Photo capture failed';
+                }
+
+                const now = new Date();
+                let locationInfo = '';
+                
+                if (userLocation) {
+                    locationInfo = `<p><strong>Location:</strong> ${locationNameEl.textContent || 'Unknown location'}</p>`;
+                } else {
+                    locationInfo = '<p><strong>Location:</strong> Not captured</p>';
+                }
+
+                loginDetails.innerHTML = `
+                    <p><strong>User:</strong> ${name}</p>
+                    <p><strong>Login Time:</strong> ${now.toLocaleString()}</p>
+                    ${locationInfo}
+                `;
+            }
+
+            function handleLogin() {
+                if (!locationAcquired && locationType === 'none') {
+                    alert('Location is required for full system access. Please try to capture your location or use approximate location.');
+                    return;
+                }
+                
+                const username = usernameInput.value.trim();
+                const password = passwordInput.value;
+                
+                if (employees[username] && employees[username].password === password) {
+                    loginSuccess(employees[username].name);
+                } else {
+                    alert('Invalid username or password.\n\nDemo credentials:\nUsername: sgxminerals\nPassword: admin123');
+                }
+            }
+
+            // ---------- LOGOUT ----------
+            function logout() {
+                loginPage.style.display = 'flex';
+                dashboardPage.style.display = 'none';
+                usernameInput.value = 'sgxminerals';
+                passwordInput.value = 'admin123';
+                capturedPhoto.src = '';
+                loginDetails.innerHTML = '';
+                locationNameEl.textContent = '';
+                
+                // Reset location status
+                locationStatus.innerHTML = '<div class="spinner"></div> Getting your location…';
+                locationStatus.className = 'location-status waiting';
+                locationOptions.style.display = 'none';
+                loginBtn.disabled = true;
+                
+                // Restart services
+                startCamera();
+                requestLocation();
+            }
+
+            // ---------- EVENT LISTENERS ----------
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                handleLogin();
+            });
+
+            logoutBtn.addEventListener('click', logout);
+            retryBtn.addEventListener('click', requestLocation);
+            approxBtn.addEventListener('click', useApproximateLocation);
+            skipBtn.addEventListener('click', skipLocation);
+
+            // Form glow effect
+            [usernameInput, passwordInput].forEach(input => {
+                input.addEventListener('focus', () => loginForm.classList.add('glow'));
+                input.addEventListener('blur', () => {
+                    if (!usernameInput.matches(':focus') && !passwordInput.matches(':focus')) {
+                        loginForm.classList.remove('glow');
+                    }
+                });
+            });
+
+            // ---------- INITIALIZATION ----------
+            startCamera();
+            requestLocation();
+        });
+    </script>
+</body>
+</html>
