@@ -3,11 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGX Minerals - Login</title>
+    <title>SGX Minerals - Resource Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
-        body { background:linear-gradient(135deg,#0c0c0c 0%,#1a1a2e 100%); color:#f0f0f0; min-height:100vh; display:flex; justify-content:center; align-items:center; overflow-x:hidden; }
+        body { background:linear-gradient(135deg,#0c0c0c 0%,#1a1a2e 100%); color:#f0f0f0; min-height:100vh; overflow-x:hidden; }
         .container { display:flex; width:900px; height:550px; background:rgba(20,20,30,.9); border-radius:20px; overflow:hidden; box-shadow:0 15px 35px rgba(0,0,0,.5); position:relative; }
         .camera-section { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; background:linear-gradient(45deg,#0f0f1a 0%,#1a1a2e 100%); padding:20px; }
         .camera-container { width:300px; height:300px; border-radius:10px; overflow:hidden; position:relative; box-shadow:0 0 20px rgba(0,0,0,.5); }
@@ -57,7 +61,7 @@
         .company-name { font-size: 20px; font-weight: 700; color: #ff8c00; }
 
         /* Dashboard */
-        .dashboard { display:none; width:100%; height:100vh; background:linear-gradient(135deg,#0c0c0c 0%,#1a1a2e 100%); color:#f0f0f0; padding:20px; }
+        .dashboard { display:none; width:100%; min-height:100vh; background:linear-gradient(135deg,#0c0c0c 0%,#1a1a2e 100%); color:#f0f0f0; padding:20px; }
         .dashboard-header { display:flex; justify-content:space-between; align-items:center; padding:20px; background:rgba(20,20,30,.8); border-radius:15px; margin-bottom:30px; box-shadow:0 10px 25px rgba(0,0,0,.3); }
         .welcome-message { font-size:24px; font-weight:600; background:linear-gradient(135deg,#64ff96 0%,#2ecc71 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
         .dashboard-logout { padding:10px 20px; background:linear-gradient(135deg,#64ff96 0%,#2ecc71 100%); border:none; border-radius:8px; color:#1a1a2e; font-size:16px; font-weight:600; cursor:pointer; transition:all .3s ease; display:flex; align-items:center; gap:8px; }
@@ -73,6 +77,32 @@
         .login-record h4 { color:#64ff96; margin-bottom:10px; }
         .login-record p { margin:6px 0; color:#b0b0d0; }
         .location-display { color: #64ff96; font-weight: 600; margin-top: 10px; }
+        
+        /* Dashboard Styles */
+        .card-header { background-color: #FF7A00; color: white; }
+        .editable { cursor: pointer; font-family: monospace; }
+        .error { border-color: red; }
+        th.sticky { position: sticky; top: 0; background: white; z-index: 10; }
+        .sparkline { width: 100px; height: 20px; background: linear-gradient(to right, #ddd, #aaa); }
+        
+        /* Task Management */
+        .task-management { background:rgba(20,20,30,.8); border-radius:15px; padding:20px; box-shadow:0 10px 25px rgba(0,0,0,.3); margin-top:20px; }
+        .task-management h3 { font-size:18px; margin-bottom:15px; color:#a0f0c0; }
+        .task-list { list-style-type: none; padding: 0; }
+        .task-item { background: rgba(30,30,46,.7); padding: 12px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .task-item.completed { opacity: 0.7; text-decoration: line-through; }
+        .task-actions { display: flex; gap: 10px; }
+        .task-btn { padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .task-btn.complete { background: #64ff96; color: #1a1a2e; }
+        .task-btn.delete { background: #ff6464; color: white; }
+        .add-task { display: flex; gap: 10px; margin-top: 15px; }
+        .add-task input { flex: 1; }
+        .add-task button { background: #64ff96; color: #1a1a2e; border: none; border-radius: 8px; padding: 10px 15px; cursor: pointer; font-weight: 600; }
+        
+        /* Main Web Page Button */
+        .main-webpage-btn { background: linear-gradient(135deg,#64ff96 0%,#2ecc71 100%); color: #1a1a2e; border: none; border-radius: 8px; padding: 12px 20px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; margin-top: 20px; transition: all .3s ease; }
+        .main-webpage-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(100,255,150,.4); }
+        
         @media (max-width:768px){
             .container{flex-direction:column;width:90%;height:auto;}
             .camera-section{padding:40px 0;}
@@ -163,6 +193,465 @@
             <div class="dashboard-card"><h3>Equipment Status</h3><p>Track equipment maintenance schedules and operational status.</p></div>
             <div class="dashboard-card"><h3>Environmental Compliance</h3><p>Monitor environmental impact and ensure regulatory compliance.</p></div>
             <div class="dashboard-card"><h3>Reports & Documentation</h3><p>Generate reports, export data, and manage documentation.</p></div>
+            
+            <!-- MIS Report Section -->
+            <div class="dashboard-card">
+                <h3>MIS Reports</h3>
+                <p>Access management information system reports and analytics.</p>
+                <button class="main-webpage-btn" id="misReportBtn">
+                    <i class="fas fa-chart-bar"></i> View MIS Reports
+                </button>
+            </div>
+            
+            <!-- Task Management Section -->
+            <div class="dashboard-card task-management">
+                <h3>Task Management</h3>
+                <p>Manage your daily tasks and assignments.</p>
+                
+                <div class="add-task">
+                    <input type="text" id="newTaskInput" placeholder="Enter a new task...">
+                    <button id="addTaskBtn">Add Task</button>
+                </div>
+                
+                <ul class="task-list" id="taskList">
+                    <!-- Tasks will be added here dynamically -->
+                </ul>
+            </div>
+            
+            <!-- Daily Production & Dispatch Dashboard -->
+            <div class="dashboard-card" style="grid-column: 1 / -1;">
+                <h3>Daily Production & Dispatch</h3>
+                <p>Monitor daily production metrics and dispatch planning.</p>
+                <button class="main-webpage-btn" id="productionDashboardBtn">
+                    <i class="fas fa-industry"></i> Open Production Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Production Dashboard (Hidden initially) -->
+    <div id="productionDashboard" style="display: none; background-color: #f3f4f6; font-family: sans-serif; padding: 20px; min-height: 100vh;">
+        <div class="max-w-7xl mx-auto">
+            <!-- Title -->
+            <h1 class="text-2xl font-bold text-center mb-4">Daily Production & Dispatch Dashboard — Date: <span id="dashboard-date">01-11-2025</span></h1>
+            
+            <!-- Top Action Bar -->
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 bg-white p-4 rounded-lg shadow">
+                <div class="flex items-center">
+                    <label for="date-input" class="mr-2">Date:</label>
+                    <input type="text" id="date-input" value="01-11-2025" class="border rounded p-1" onchange="updateDate(this.value)">
+                </div>
+                <div class="flex space-x-2 mt-2 md:mt-0">
+                    <button onclick="exportCSV()" class="bg-blue-500 text-white px-4 py-2 rounded">Export CSV</button>
+                    <button onclick="exportExcel()" class="bg-green-500 text-white px-4 py-2 rounded">Export Excel</button>
+                    <button onclick="printDashboard()" class="bg-gray-500 text-white px-4 py-2 rounded">Print</button>
+                    <button class="main-webpage-btn" id="backToDashboardBtn">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Responsive Grid: 1 col mobile, 2 col desktop -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Section 1: Production Summary -->
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h2 class="card-header text-lg font-semibold p-2 rounded-t-lg" title="Summary of production metrics for the day and month.">Production Summary</h2>
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr>
+                                <th class="border p-2 sticky">Metric</th>
+                                <th class="border p-2 sticky" title="For The Day">FTD</th>
+                                <th class="border p-2 sticky" title="Month To Date">MTD</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border p-2">Mine Production</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">Boulder Dispatch QTY</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">Plant Production</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">Dispatch QTY</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">Basic Revenue</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">Total Revenue</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Section 2: Royalty Requirement & Dispatch Planning -->
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h2 class="card-header text-lg font-semibold p-2 rounded-t-lg" title="Royalty balances and planning for materials.">Royalty Requirement & Dispatch Planning</h2>
+                    <table class="w-full border-collapse" id="royalty-table">
+                        <thead>
+                            <tr>
+                                <th class="border p-2 sticky">Materiel</th>
+                                <th class="border p-2 sticky" title="10MM material">10MM</th>
+                                <th class="border p-2 sticky" title="20MM material">20MM</th>
+                                <th class="border p-2 sticky" title="40MM material">40MM</th>
+                                <th class="border p-2 sticky" title="40-65MM material">40–65MM</th>
+                                <th class="border p-2 sticky" title="Msand material">Msand</th>
+                                <th class="border p-2 sticky" title="GSB material">GSB</th>
+                                <th class="border p-2 sticky">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border p-2">Royalty Balance in MDL (Tons)</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2 font-bold" id="royalty-total">0</td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2 font-bold" colspan="7">Grand Total</td>
+                                <td class="border p-2 font-bold" id="royalty-grand-total">0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- Blasting Details -->
+                    <div class="mt-4">
+                        <h3 class="font-semibold mb-2">Blasting Details</h3>
+                        <table class="w-full border-collapse">
+                            <thead>
+                                <tr>
+                                    <th class="border p-2">No. of Holes</th>
+                                    <th class="border p-2">Total Feetage</th>
+                                    <th class="border p-2">Blasting (Yes/No)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                    <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                    <td class="border p-2">
+                                        <select class="w-full p-1 border rounded" onchange="validateAndUpdate(this)">
+                                            <option value=""></option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Section 3: Today's Dispatch Plan in Tons -->
+                <div class="bg-white p-4 rounded-lg shadow md:col-span-2">
+                    <h2 class="card-header text-lg font-semibold p-2 rounded-t-lg" title="Dispatch plan by customer and material.">Today's Dispatch Plan in Tons</h2>
+                    <table class="w-full border-collapse" id="dispatch-table">
+                        <thead>
+                            <tr>
+                                <th class="border p-2 sticky">Customer</th>
+                                <th class="border p-2 sticky">10MM</th>
+                                <th class="border p-2 sticky">20MM</th>
+                                <th class="border p-2 sticky">40MM</th>
+                                <th class="border p-2 sticky">40–65MM</th>
+                                <th class="border p-2 sticky">Msand</th>
+                                <th class="border p-2 sticky">GSB</th>
+                                <th class="border p-2 sticky">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border p-2">Aravind Techno</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2 font-bold">0</td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">Chenderu & Co</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2 font-bold">0</td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">Afcon Projects</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2 font-bold">0</td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">KEC</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2 font-bold">0</td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">JS Mineing</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2 font-bold">0</td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">L&T – P1</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2 font-bold">0</td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">Others</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2 font-bold">0</td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2 font-bold">Total</td>
+                                <td class="border p-2 font-bold">0</td>
+                                <td class="border p-2 font-bold">0</td>
+                                <td class="border p-2 font-bold">0</td>
+                                <td class="border p-2 font-bold">0</td>
+                                <td class="border p-2 font-bold">0</td>
+                                <td class="border p-2 font-bold">0</td>
+                                <td class="border p-2 font-bold">0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Section 4: Stock Status -->
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h2 class="card-header text-lg font-semibold p-2 rounded-t-lg" title="Current stock levels.">Stock Status</h2>
+                    <table class="w-full border-collapse">
+                        <tbody>
+                            <tr>
+                                <td class="border p-2">10MM</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">20MM</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">RIVO</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">M-Sand</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">Railway Ballast (40–65MM)</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2 font-bold">Total Stock</td>
+                                <td class="border p-2 font-bold" id="stock-total">0</td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">Boulder Stock at Quarry</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">Boulder Stock at Plant</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">Diesel Stock</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">Tire Stock</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Section 5: Equipment Update -->
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h2 class="card-header text-lg font-semibold p-2 rounded-t-lg" title="Status of equipment.">Equipment Update</h2>
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr>
+                                <th class="border p-2 sticky">Equipment</th>
+                                <th class="border p-2 sticky">Running</th>
+                                <th class="border p-2 sticky">Idle</th>
+                                <th class="border p-2 sticky">Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border p-2">Tippers</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">Excavators Working</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">Loaders Working</td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">Total Trips of Tippers</td>
+                                <td class="border p-2" colspan="3"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">Total Tonnage Moved</td>
+                                <td class="border p-2" colspan="3"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">Excavator Working Hours</td>
+                                <td class="border p-2" colspan="3"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Section 6: Fund Requirement & Collection Plan -->
+                <div class="bg-white p-4 rounded-lg shadow md:col-span-2">
+                    <h2 class="card-header text-lg font-semibold p-2 rounded-t-lg" title="Financial planning for funds and collections.">Fund Requirement & Collection Plan</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <h3 class="font-bold mb-2">Fund Requirement</h3>
+                            <table class="w-full border-collapse" id="fund-requirement-table">
+                                <thead>
+                                    <tr>
+                                        <th class="border p-2">Vendor Name</th>
+                                        <th class="border p-2">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                        <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                        <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                        <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                        <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                        <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                        <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td class="border p-2 font-bold">Total Fund Requirement</td>
+                                        <td class="border p-2 font-bold" id="fund-total">0</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div>
+                            <h3 class="font-bold mb-2">Expected Collection</h3>
+                            <table class="w-full border-collapse" id="collection-table">
+                                <thead>
+                                    <tr>
+                                        <th class="border p-2">Customer Name</th>
+                                        <th class="border p-2">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                        <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                        <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                        <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                        <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                        <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border p-2"><span class="editable" contenteditable="true"></span></td>
+                                        <td class="border p-2"><span class="editable" contenteditable="true" data-type="number" onblur="validateAndUpdate(this)"></span></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td class="border p-2 font-bold">Total Expected Collection</td>
+                                        <td class="border p-2 font-bold" id="collection-total">0</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -171,6 +660,7 @@
             // ---------- DOM ----------
             const loginPage       = document.getElementById('loginPage');
             const dashboardPage   = document.getElementById('dashboardPage');
+            const productionDashboard = document.getElementById('productionDashboard');
             const welcomeMessage  = document.getElementById('welcomeMessage');
             const logoutBtn       = document.getElementById('logoutBtn');
             const usernameInput   = document.getElementById('username');
@@ -187,6 +677,14 @@
             const retryBtn        = document.getElementById('retryLocation');
             const approxBtn       = document.getElementById('useApproximateLocation');
             const skipBtn         = document.getElementById('skipLocation');
+            const productionDashboardBtn = document.getElementById('productionDashboardBtn');
+            const backToDashboardBtn = document.getElementById('backToDashboardBtn');
+            const misReportBtn = document.getElementById('misReportBtn');
+            
+            // Task Management Elements
+            const newTaskInput = document.getElementById('newTaskInput');
+            const addTaskBtn = document.getElementById('addTaskBtn');
+            const taskList = document.getElementById('taskList');
 
             // ---------- STATE ----------
             let currentStream = null;
@@ -484,6 +982,7 @@
             function logout() {
                 loginPage.style.display = 'flex';
                 dashboardPage.style.display = 'none';
+                productionDashboard.style.display = 'none';
                 usernameInput.value = 'sgxminerals';
                 passwordInput.value = 'admin123';
                 capturedPhoto.src = '';
@@ -501,6 +1000,184 @@
                 requestLocation();
             }
 
+            // ---------- TASK MANAGEMENT ----------
+            function loadTasks() {
+                const savedTasks = localStorage.getItem('sgxTasks');
+                if (savedTasks) {
+                    taskList.innerHTML = savedTasks;
+                    attachTaskEventListeners();
+                }
+            }
+
+            function saveTasks() {
+                localStorage.setItem('sgxTasks', taskList.innerHTML);
+            }
+
+            function addTask() {
+                const taskText = newTaskInput.value.trim();
+                if (taskText === '') return;
+                
+                const taskId = 'task-' + Date.now();
+                const taskItem = document.createElement('li');
+                taskItem.className = 'task-item';
+                taskItem.id = taskId;
+                taskItem.innerHTML = `
+                    <span>${taskText}</span>
+                    <div class="task-actions">
+                        <button class="task-btn complete" data-id="${taskId}">Complete</button>
+                        <button class="task-btn delete" data-id="${taskId}">Delete</button>
+                    </div>
+                `;
+                
+                taskList.appendChild(taskItem);
+                newTaskInput.value = '';
+                saveTasks();
+                attachTaskEventListeners();
+            }
+
+            function attachTaskEventListeners() {
+                document.querySelectorAll('.task-btn.complete').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const taskId = this.getAttribute('data-id');
+                        const taskItem = document.getElementById(taskId);
+                        taskItem.classList.toggle('completed');
+                        saveTasks();
+                    });
+                });
+                
+                document.querySelectorAll('.task-btn.delete').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const taskId = this.getAttribute('data-id');
+                        const taskItem = document.getElementById(taskId);
+                        taskItem.remove();
+                        saveTasks();
+                    });
+                });
+            }
+
+            // ---------- PRODUCTION DASHBOARD FUNCTIONS ----------
+            function showProductionDashboard() {
+                dashboardPage.style.display = 'none';
+                productionDashboard.style.display = 'block';
+            }
+
+            function hideProductionDashboard() {
+                productionDashboard.style.display = 'none';
+                dashboardPage.style.display = 'block';
+            }
+
+            // Update date
+            function updateDate(newDate) {
+                document.getElementById('dashboard-date').textContent = newDate;
+            }
+
+            // Validate and update totals
+            function validateAndUpdate(element) {
+                const value = element.textContent ? element.textContent.trim() : element.value;
+                if (element.dataset && element.dataset.type === 'number' && isNaN(parseFloat(value))) {
+                    element.classList.add('error');
+                    return;
+                }
+                if (element.classList) element.classList.remove('error');
+                updateTotals();
+            }
+
+            // Update all totals
+            function updateTotals() {
+                // Royalty Table
+                const royaltyRow = document.querySelector('#royalty-table tbody tr');
+                let royaltyTotal = 0;
+                royaltyRow.querySelectorAll('.editable').forEach(cell => {
+                    const val = parseFloat(cell.textContent) || 0;
+                    royaltyTotal += val;
+                });
+                document.getElementById('royalty-total').textContent = royaltyTotal.toFixed(1);
+                document.getElementById('royalty-grand-total').textContent = royaltyTotal.toFixed(1);
+
+                // Dispatch Table
+                const dispatchRows = document.querySelectorAll('#dispatch-table tbody tr:not(:last-child)');
+                const columnTotals = Array(6).fill(0);
+                let grandTotal = 0;
+                dispatchRows.forEach(row => {
+                    let rowTotal = 0;
+                    const cells = row.querySelectorAll('.editable');
+                    cells.forEach((cell, idx) => {
+                        const val = parseFloat(cell.textContent) || 0;
+                        rowTotal += val;
+                        columnTotals[idx] += val;
+                    });
+                    row.querySelector('td:last-child').textContent = rowTotal;
+                    grandTotal += rowTotal;
+                });
+                const totalRow = document.querySelector('#dispatch-table tbody tr:last-child');
+                totalRow.querySelectorAll('td:not(:first-child):not(:last-child)').forEach((td, idx) => {
+                    td.textContent = columnTotals[idx];
+                });
+                totalRow.querySelector('td:last-child').textContent = grandTotal;
+
+                // Stock Total
+                let stockTotal = 0;
+                document.querySelectorAll('[id="stock-total"]').forEach(total => {
+                    const stockRows = total.closest('table').querySelectorAll('tr:nth-child(-n+5) .editable'); // First 5 are materials
+                    stockTotal = Array.from(stockRows).reduce((sum, cell) => sum + (parseFloat(cell.textContent) || 0), 0);
+                    total.textContent = stockTotal;
+                });
+
+                // Fund and Collection Totals
+                ['fund-requirement-table', 'collection-table'].forEach(id => {
+                    const table = document.getElementById(id);
+                    let total = 0;
+                    table.querySelectorAll('tbody .editable[data-type="number"]').forEach(cell => {
+                        total += parseFloat(cell.textContent) || 0;
+                    });
+                    table.querySelector('tfoot td:last-child').textContent = total;
+                });
+            }
+
+            // Export CSV
+            function exportCSV() {
+                let csv = 'Section,Data\n'; // Collect all data
+                // Add logic to iterate through all tables and append to csv
+                // For brevity, example for one table
+                const tables = document.querySelectorAll('table');
+                tables.forEach((table, idx) => {
+                    csv += `Table ${idx + 1}\n`;
+                    Array.from(table.rows).forEach(row => {
+                        csv += Array.from(row.cells).map(cell => cell.textContent.trim()).join(',') + '\n';
+                    });
+                    csv += '\n';
+                });
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'dashboard.csv';
+                a.click();
+            }
+
+            // Export Excel using SheetJS
+            function exportExcel() {
+                if (typeof XLSX === 'undefined') {
+                    alert('SheetJS not loaded, falling back to CSV');
+                    exportCSV();
+                    return;
+                }
+                const wb = XLSX.utils.book_new();
+                document.querySelectorAll('table').forEach((table, idx) => {
+                    const ws = XLSX.utils.table_to_sheet(table);
+                    XLSX.utils.book_append_sheet(wb, ws, `Sheet${idx + 1}`);
+                });
+                XLSX.writeFile(wb, 'dashboard.xlsx');
+            }
+
+            // Print
+            function printDashboard() {
+                // Hide controls
+                document.querySelector('.flex.justify-between').style.display = 'none';
+                window.print();
+                document.querySelector('.flex.justify-between').style.display = 'flex';
+            }
+
             // ---------- EVENT LISTENERS ----------
             loginForm.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -511,6 +1188,23 @@
             retryBtn.addEventListener('click', requestLocation);
             approxBtn.addEventListener('click', useApproximateLocation);
             skipBtn.addEventListener('click', skipLocation);
+            
+            // Task Management
+            addTaskBtn.addEventListener('click', addTask);
+            newTaskInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addTask();
+                }
+            });
+            
+            // Dashboard Navigation
+            productionDashboardBtn.addEventListener('click', showProductionDashboard);
+            backToDashboardBtn.addEventListener('click', hideProductionDashboard);
+            
+            // MIS Report Button
+            misReportBtn.addEventListener('click', function() {
+                alert('MIS Reports functionality would be implemented here');
+            });
 
             // Form glow effect
             [usernameInput, passwordInput].forEach(input => {
@@ -525,6 +1219,16 @@
             // ---------- INITIALIZATION ----------
             startCamera();
             requestLocation();
+            loadTasks();
+            updateTotals();
+
+            // Accessibility: Keyboard navigation for editable cells
+            document.addEventListener('keydown', (e) => {
+                if (e.target.classList.contains('editable') && e.key === 'Enter') {
+                    e.preventDefault();
+                    e.target.blur();
+                }
+            });
         });
     </script>
 </body>
